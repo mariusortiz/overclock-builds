@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://overclock.randomlabs.dev/sitemap.xml

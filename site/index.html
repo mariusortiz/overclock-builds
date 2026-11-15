@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overclock — Shooter d'arène 3D</title>
+<meta name="description" content="Overclock : shooter d'arène 3D low-poly gratuit. Joue dans le navigateur ou installe l'APK Android.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Overclock">
+<meta property="og:title" content="Overclock">
+<meta property="og:description" content="Shooter d'arène 3D low-poly gratuit, sur Android et dans le navigateur.">
+<meta property="og:image" content="https://overclock.randomlabs.dev/site/img/hero-large.jpg">
+<meta property="og:url" content="https://overclock.randomlabs.dev/site/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../index.icon.png">
+<style>
+  @font-face {
+    font-family: "Kenney Mini Square Mono";
+    src: url("kenney_mini_square_mono.ttf") format("truetype");
+    font-display: swap;
+  }
+  :root {
+    --bg: #060b2a;
+    --panel: #0c1440;
+    --line: #1d2a6b;
+    --text: #e8ecff;
+    --muted: #9aa6d8;
+    --cyan: #29d4ff;
+    --magenta: #ff3df2;
+    --gold: #ffd84d;
+    --title: "Kenney Mini Square Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  img, video { display: block; max-width: 100%; }
+  a { color: var(--cyan); }
+  h1, h2, h3, .button, .tag { font-family: var(--title); font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase; }
+  .wrap { width: min(1120px, 100% - 32px); margin-inline: auto; }
+
+  /* Hero */
+  .hero { position: relative; min-height: min(92vh, 760px); display: grid; align-items: end; overflow: hidden; }
+  .hero > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .hero::after { content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(6, 11, 42, 0.7) 0%, rgba(6, 11, 42, 0) 65%),
+      linear-gradient(180deg, rgba(6, 11, 42, 0.15) 0%, rgba(6, 11, 42, 0.55) 55%, var(--bg) 100%); }
+  .hero .wrap { position: relative; z-index: 1; padding-block: 48px 56px; }
+  .logo { width: min(520px, 100%); height: auto; }
+  .hero p { max-width: 560px; margin: 18px 0 28px; font-size: 1.15rem; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6); }
+  .actions { display: flex; flex-wrap: wrap; gap: 14px; }
+  .button { display: inline-flex; align-items: center; justify-content: center; min-height: 56px; padding: 14px 28px;
+    font-size: 1.15rem; text-decoration: none; color: var(--bg); background: var(--cyan);
+    clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%); transition: transform 0.15s, filter 0.15s; }
+  .button:hover, .button:focus-visible { transform: translateY(-2px); filter: brightness(1.12); }
+  .button.alt { background: var(--magenta); }
+  .button.ghost { background: transparent; color: var(--cyan); outline: 2px solid var(--cyan); outline-offset: -2px; clip-path: none; }
+  .note { margin-top: 14px; font-size: 0.9rem; color: var(--muted); }
+
+  section { padding-block: 64px; }
+  h2 { font-size: clamp(1.6rem, 4vw, 2.3rem); margin: 0 0 8px; color: var(--cyan); }
+  .lead { margin: 0 0 32px; color: var(--muted); max-width: 640px; }
+  .tag { display: inline-block; font-size: 0.8rem; padding: 3px 10px; background: var(--magenta); color: var(--bg); margin-bottom: 10px; }
+
+  /* Videos */
+  .videos { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 28px; }
+  .video { background: var(--panel); border: 1px solid var(--line); }
+  .video video { width: 100%; aspect-ratio: 16 / 9; background: #000; }
+  .video div { padding: 16px 20px 20px; }
+  .video h3 { margin: 0 0 4px; font-size: 1.2rem; }
+  .video p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+
+  /* Episodes */
+  .episodes { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+  .episode { display: block; background: var(--panel); border: 1px solid var(--line); color: var(--text); text-decoration: none; transition: transform 0.15s, border-color 0.15s; }
+  .episode:hover, .episode:focus-visible { transform: translateY(-3px); border-color: var(--cyan); }
+  .episode img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: #000; }
+  .episode div { padding: 10px 14px 14px; }
+  .episode span { font-family: var(--title); font-size: 0.75rem; color: var(--magenta); letter-spacing: 0.06em; }
+  .episode h3 { margin: 2px 0 4px; font-size: 1rem; }
+  .episode p { margin: 0; color: var(--muted); font-size: 0.88rem; }
+
+  /* Features */
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+  .feature { background: var(--panel); border: 1px solid var(--line); }
+  .feature img { width: 100%; aspect-ratio: 16 / 8; object-fit: cover; }
+  .feature div { padding: 16px 20px 20px; }
+  .feature h3 { margin: 0 0 6px; font-size: 1.1rem; color: var(--text); }
+  .feature h3 b { color: var(--magenta); font-weight: 400; }
+  .feature p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .feature.shop { border-color: var(--gold); }
+  .feature.shop h3 b { color: var(--gold); }
+
+  /* Install */
+  .install { background: linear-gradient(135deg, #0d1a5c, #2a0b4a); }
+  .steps { list-style: none; counter-reset: step; padding: 0; margin: 0 0 32px; display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .steps li { counter-increment: step; background: rgba(6, 11, 42, 0.55); border: 1px solid var(--line); padding: 20px; }
+  .steps li::before { content: counter(step); display: block; font-family: var(--title); font-size: 2rem; color: var(--magenta); line-height: 1; margin-bottom: 8px; }
+
+  footer { padding-block: 32px 48px; color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--line); }
+  footer p { margin: 4px 0; }
+
+  @media (max-width: 520px) {
+    body { font-size: 16px; }
+    .button { width: 100%; }
+    section { padding-block: 48px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .button { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <img src="img/hero-large.jpg" alt="Les quatre héros de l'escouade face au Titan, dans la ville">
+  <div class="wrap">
+    <svg class="logo" viewBox="0 0 860 180" role="img" aria-label="Overclock">
+      <polygon points="40,4 856,4 820,176 4,176" fill="#081236" stroke="#29d4ff" stroke-width="8"/>
+      <polygon points="190,140 760,140 756,154 186,154" fill="#ff3df2"/>
+      <polygon points="122,22 76,96 108,96 92,158 156,72 122,72" fill="#ff3df2"/>
+      <text x="200" y="118" fill="#e8ecff" font-family="Kenney Mini Square Mono, monospace" font-size="84" letter-spacing="4">OVERCLOCK</text>
+    </svg>
+    <p>Shooter d'arène en 3D low-poly. Choisis ton héros, survis aux vagues, abats les boss et va jusqu'au Titan.</p>
+    <div class="actions">
+      <a class="button" href="../">Jouer dans le navigateur</a>
+      <a class="button alt" href="https://github.com/mariusortiz/overclock-builds/releases/download/latest-debug/overclock-debug.apk">Télécharger l'APK</a>
+      <a class="button ghost" href="boutique.html">Boutique</a>
+      <a class="button ghost" href="codex.html">Codex</a>
+      <a class="button ghost" href="nouveautes.html">Nouveautés</a>
+    </div>
+    <p class="note">Gratuit · Android et navigateur · aucune donnée collectée</p>
+  </div>
+</header>
+
+<main>
+  <section id="videos">
+    <div class="wrap">
+      <h2>Regarde</h2>
+      <p class="lead">Le trailer fait le tour du jeu ; l'anime raconte comment l'escouade s'est formée. Les deux sont joués par le moteur du jeu.</p>
+      <div class="videos">
+        <article class="video">
+          <video src="../trailer.mp4" poster="../trailer.jpg" controls playsinline preload="none"></video>
+          <div>
+            <h3>Trailer</h3>
+            <p>Les arènes, les ennemis, les boss, l'arsenal, les héros et la boutique. 2 min 30.</p>
+          </div>
+        </article>
+        <article class="video">
+          <video src="../anime.mp4" poster="../anime.jpg" controls playsinline preload="none"></video>
+          <div>
+            <span class="tag">Anime</span>
+            <h3>Épisode 1 : L'escouade</h3>
+            <p>Le Soldat, la Kunoichi, la Capitaine et le Ronin contre le Titan, façon anime. La suite : <a href="#anime">9 autres épisodes</a>, puis <a href="#anime2">la saison 2</a>, <a href="#anime3">la saison 3</a> et <a href="#anime4">la saison 4</a>.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="anime">
+    <div class="wrap">
+      <h2>L'anime · saison 1</h2>
+      <p class="lead">Dix épisodes de 2 minutes : l'escouade, le Titan, puis Vipère et son Escouade Écarlate, jusqu'au Titan Mk II.</p>
+      <div class="episodes">
+        <a class="episode" href="../anime.html">
+          <img src="../anime.jpg" alt="Épisode 1" loading="lazy">
+          <div><span>ÉPISODE 1</span><h3>L'escouade</h3><p>Quatre héros contre le Titan.</p></div>
+        </a>
+        <a class="episode" href="../anime02.html">
+          <img src="../anime02.jpg" alt="Épisode 2" loading="lazy">
+          <div><span>ÉPISODE 2</span><h3>Le défi</h3><p>Vipère débarque et lance un défi.</p></div>
+        </a>
+        <a class="episode" href="../anime03.html">
+          <img src="../anime03.jpg" alt="Épisode 3" loading="lazy">
+          <div><span>ÉPISODE 3</span><h3>La course</h3><p>Course de vaisseaux contre l'Écarlate.</p></div>
+        </a>
+        <a class="episode" href="../anime04.html">
+          <img src="../anime04.jpg" alt="Épisode 4" loading="lazy">
+          <div><span>ÉPISODE 4</span><h3>L'escouade écarlate</h3><p>Squad contre squad pour la station.</p></div>
+        </a>
+        <a class="episode" href="../anime05.html">
+          <img src="../anime05.jpg" alt="Épisode 5" loading="lazy">
+          <div><span>ÉPISODE 5</span><h3>Le désert des secrets</h3><p>Calamity, un gardien, des secrets.</p></div>
+        </a>
+        <a class="episode" href="../anime06.html">
+          <img src="../anime06.jpg" alt="Épisode 6" loading="lazy">
+          <div><span>ÉPISODE 6</span><h3>Duel dans la jungle</h3><p>Le Ronin face à Vipère.</p></div>
+        </a>
+        <a class="episode" href="../anime07.html">
+          <img src="../anime07.jpg" alt="Épisode 7" loading="lazy">
+          <div><span>ÉPISODE 7</span><h3>Alliance</h3><p>Deux escouades, une trêve.</p></div>
+        </a>
+        <a class="episode" href="../anime08.html">
+          <img src="../anime08.jpg" alt="Épisode 8" loading="lazy">
+          <div><span>ÉPISODE 8</span><h3>Le volcan</h3><p>Infiltration chez le Directeur.</p></div>
+        </a>
+        <a class="episode" href="../anime09.html">
+          <img src="../anime09.jpg" alt="Épisode 9" loading="lazy">
+          <div><span>ÉPISODE 9</span><h3>Titan Mk II</h3><p>Le Titan rouge marche sur la ville.</p></div>
+        </a>
+        <a class="episode" href="../anime10.html">
+          <img src="../anime10.jpg" alt="Épisode 10" loading="lazy">
+          <div><span>ÉPISODE 10</span><h3>Overclock</h3><p>Le final de la saison 1.</p></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="anime2">
+    <div class="wrap">
+      <h2>L'anime · saison 2</h2>
+      <p class="lead">Dix épisodes : un virus corrompt le monde d'Overclock, et un homme à tête de vache, le Créateur, sait pourquoi.</p>
+      <div class="episodes">
+        <a class="episode" href="../anime11.html">
+          <img src="../anime11.jpg" alt="Épisode 11" loading="lazy">
+          <div><span>ÉPISODE 11</span><h3>Le glitch</h3><p>La ville se déchire. Une vache sur un toit.</p></div>
+        </a>
+        <a class="episode" href="../anime12.html">
+          <img src="../anime12.jpg" alt="Épisode 12" loading="lazy">
+          <div><span>ÉPISODE 12</span><h3>Le message</h3><p>« Le virus arrive. — C. »</p></div>
+        </a>
+        <a class="episode" href="../anime13.html">
+          <img src="../anime13.jpg" alt="Épisode 13" loading="lazy">
+          <div><span>ÉPISODE 13</span><h3>La course corrompue</h3><p>Des vaisseaux noirs, un pilote en vert.</p></div>
+        </a>
+        <a class="episode" href="../anime14.html">
+          <img src="../anime14.jpg" alt="Épisode 14" loading="lazy">
+          <div><span>ÉPISODE 14</span><h3>Le Virus</h3><p>Un Titan noir sort du sable.</p></div>
+        </a>
+        <a class="episode" href="../anime15.html">
+          <img src="../anime15.jpg" alt="Épisode 15" loading="lazy">
+          <div><span>ÉPISODE 15</span><h3>Le Créateur</h3><p>Celui qui a écrit le monde se montre.</p></div>
+        </a>
+        <a class="episode" href="../anime16.html">
+          <img src="../anime16.jpg" alt="Épisode 16" loading="lazy">
+          <div><span>ÉPISODE 16</span><h3>Code source</h3><p>Le premier fragment, et un accès root.</p></div>
+        </a>
+        <a class="episode" href="../anime17.html">
+          <img src="../anime17.jpg" alt="Épisode 17" loading="lazy">
+          <div><span>ÉPISODE 17</span><h3>Mise à jour</h3><p>Le Directeur, pris par le Virus.</p></div>
+        </a>
+        <a class="episode" href="../anime18.html">
+          <img src="../anime18.jpg" alt="Épisode 18" loading="lazy">
+          <div><span>ÉPISODE 18</span><h3>Écran noir</h3><p>Ils sont effacés un par un.</p></div>
+        </a>
+        <a class="episode" href="../anime19.html">
+          <img src="../anime19.jpg" alt="Épisode 19" loading="lazy">
+          <div><span>ÉPISODE 19</span><h3>Ctrl+Z</h3><p>Tout annuler. Une seule fois.</p></div>
+        </a>
+        <a class="episode" href="../anime20.html">
+          <img src="../anime20.jpg" alt="Épisode 20" loading="lazy">
+          <div><span>ÉPISODE 20</span><h3>Redémarrage</h3><p>Le final de la saison 2.</p></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="anime3">
+    <div class="wrap">
+      <h2>L'anime · saison 3</h2>
+      <p class="lead">Dix épisodes : un portail emmène l'escouade dans une galaxie inconnue. Pour rentrer, il faut résoudre ses mystères.</p>
+      <div class="episodes">
+        <a class="episode" href="../anime21.html">
+          <img src="../anime21.jpg" alt="Épisode 21" loading="lazy">
+          <div><span>ÉPISODE 21</span><h3>Le Portail</h3><p>Un anneau de lumière au-dessus du hangar.</p></div>
+        </a>
+        <a class="episode" href="../anime22.html">
+          <img src="../anime22.jpg" alt="Épisode 22" loading="lazy">
+          <div><span>ÉPISODE 22</span><h3>Terre inconnue</h3><p>Une planète de cristal. Plus de code.</p></div>
+        </a>
+        <a class="episode" href="../anime23.html">
+          <img src="../anime23.jpg" alt="Épisode 23" loading="lazy">
+          <div><span>ÉPISODE 23</span><h3>Le Chant des cristaux</h3><p>Jouer juste, ou se battre.</p></div>
+        </a>
+        <a class="episode" href="../anime24.html">
+          <img src="../anime24.jpg" alt="Épisode 24" loading="lazy">
+          <div><span>ÉPISODE 24</span><h3>La Ceinture</h3><p>Vipère pilote pour de vrai.</p></div>
+        </a>
+        <a class="episode" href="../anime25.html">
+          <img src="../anime25.jpg" alt="Épisode 25" loading="lazy">
+          <div><span>ÉPISODE 25</span><h3>Les Ruines stellaires</h3><p>Une statue d'or. Une tête de vache.</p></div>
+        </a>
+        <a class="episode" href="../anime26.html">
+          <img src="../anime26.jpg" alt="Épisode 26" loading="lazy">
+          <div><span>ÉPISODE 26</span><h3>L'Archive</h3><p>Version 0.</p></div>
+        </a>
+        <a class="episode" href="../anime27.html">
+          <img src="../anime27.jpg" alt="Épisode 27" loading="lazy">
+          <div><span>ÉPISODE 27</span><h3>La Lune qui boucle</h3><p>Trente secondes, encore et encore.</p></div>
+        </a>
+        <a class="episode" href="../anime28.html">
+          <img src="../anime28.jpg" alt="Épisode 28" loading="lazy">
+          <div><span>ÉPISODE 28</span><h3>Écarlate</h3><p>Les deux escouades réunies.</p></div>
+        </a>
+        <a class="episode" href="../anime29.html">
+          <img src="../anime29.jpg" alt="Épisode 29" loading="lazy">
+          <div><span>ÉPISODE 29</span><h3>Le Gardien</h3><p>« Qui a créé le Créateur ? »</p></div>
+        </a>
+        <a class="episode" href="../anime30.html">
+          <img src="../anime30.jpg" alt="Épisode 30" loading="lazy">
+          <div><span>ÉPISODE 30</span><h3>Retour</h3><p>Le final de la saison 3.</p></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="anime4">
+    <div class="wrap">
+      <h2>L'anime · saison 4</h2>
+      <p class="lead">Dix épisodes : des doubles de l'escouade sortent d'un monde-miroir où Le Créateur n'a jamais écrit le jeu. Et le premier d'entre eux, le Reflet, veut leur monde.</p>
+      <div class="episodes">
+        <a class="episode" href="../anime32.html">
+          <img src="../anime32.jpg" alt="Épisode 32" loading="lazy">
+          <div><span>ÉPISODE 32</span><h3>Le Reflet</h3><p>Un miroir que personne n'a posé là.</p></div>
+        </a>
+        <a class="episode" href="../anime33.html">
+          <img src="../anime33.jpg" alt="Épisode 33" loading="lazy">
+          <div><span>ÉPISODE 33</span><h3>Les Doubles</h3><p>Contre soi-même, dans le désert.</p></div>
+        </a>
+        <a class="episode" href="../anime34.html">
+          <img src="../anime34.jpg" alt="Épisode 34" loading="lazy">
+          <div><span>ÉPISODE 34</span><h3>Sans double</h3><p>Le capybara traverse le miroir.</p></div>
+        </a>
+        <a class="episode" href="../anime35.html">
+          <img src="../anime35.jpg" alt="Épisode 35" loading="lazy">
+          <div><span>ÉPISODE 35</span><h3>De l'autre côté</h3><p>La ville, à l'envers.</p></div>
+        </a>
+        <a class="episode" href="../anime36.html">
+          <img src="../anime36.jpg" alt="Épisode 36" loading="lazy">
+          <div><span>ÉPISODE 36</span><h3>Le monde sans code</h3><p>Un Créateur qui fait pousser des fleurs.</p></div>
+        </a>
+        <a class="episode" href="../anime37.html">
+          <img src="../anime37.jpg" alt="Épisode 37" loading="lazy">
+          <div><span>ÉPISODE 37</span><h3>Échange</h3><p>Les ennemis deviennent des alliés.</p></div>
+        </a>
+        <a class="episode" href="../anime38.html">
+          <img src="../anime38.jpg" alt="Épisode 38" loading="lazy">
+          <div><span>ÉPISODE 38</span><h3>Le Reflet</h3><p>Il copie tout ce qu'il voit.</p></div>
+        </a>
+        <a class="episode" href="../anime39.html">
+          <img src="../anime39.jpg" alt="Épisode 39" loading="lazy">
+          <div><span>ÉPISODE 39</span><h3>Le Miroir-Titan</h3><p>Sept attaques à la fois.</p></div>
+        </a>
+        <a class="episode" href="../anime40.html">
+          <img src="../anime40.jpg" alt="Épisode 40" loading="lazy">
+          <div><span>ÉPISODE 40</span><h3>Fusion</h3><p>Les deux mondes se touchent.</p></div>
+        </a>
+        <a class="episode" href="../anime41.html">
+          <img src="../anime41.jpg" alt="Épisode 41" loading="lazy">
+          <div><span>ÉPISODE 41</span><h3>Les Miroirs</h3><p>Le final de la saison 4.</p></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="survie">
+    <div class="wrap">
+      <h2>Le mode Survie</h2>
+      <p class="lead">Une île sauvage de 800 m, générée à partir d'une graine : forêts, jungles, déserts, marais, montagnes enneigées. Récolte, fabrique tes outils et tes armes, construis ta base sur une grille, garde un œil sur ta faim et ta soif, et tiens la nuit face aux ombres. Le monde est sauvegardé.</p>
+      <div class="episodes">
+        <a class="episode" href="../anime42.html">
+          <img src="../anime42.jpg" alt="Épisode hors-série 42" loading="lazy">
+          <div><span>HORS-SÉRIE · ÉPISODE 42</span><h3>Naufragés</h3><p>Un naufrage, des murs, un feu, une nuit.</p></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="animaux">
+    <div class="wrap">
+      <h2>Les animaux de compagnie</h2>
+      <p class="lead">17 compagnons qui suivent ton héros en partie : chien, chat, renard, loup, aigle, mini dragon, drone, mini-Titan, le veau du Créateur… Chacun a son petit coup de main. On les trouve en boutique, dans le passe saison 2, et dans des œufs gagnés sur les boss, qui éclosent après 10 vagues. <a href="codex.html#pets">Tous les animaux dans le codex</a>.</p>
+      <div class="episodes">
+        <a class="episode" href="../anime31.html">
+          <img src="../anime31.jpg" alt="Épisode hors-série" loading="lazy">
+          <div><span>HORS-SÉRIE · ÉPISODE 31</span><h3>Les Compagnons</h3><p>Chacun son animal. Le Créateur trouve un œuf.</p></div>
+        </a>
+        <a class="episode" href="c/card_pet_dog.html">
+          <img src="img/cards/card_pet_dog.jpg" alt="Chien" loading="lazy" style="aspect-ratio: 1">
+          <div><span>COMPAGNON</span><h3>Chien</h3><p>Rapporte les bonus</p></div>
+        </a>
+        <a class="episode" href="c/card_pet_fox.html">
+          <img src="img/cards/card_pet_fox.jpg" alt="Renard" loading="lazy" style="aspect-ratio: 1">
+          <div><span>COMPAGNON</span><h3>Renard</h3><p>Tu cours plus vite</p></div>
+        </a>
+        <a class="episode" href="c/card_pet_drone.html">
+          <img src="img/cards/card_pet_drone.jpg" alt="Drone" loading="lazy" style="aspect-ratio: 1">
+          <div><span>COMPAGNON</span><h3>Drone</h3><p>Tire avec toi</p></div>
+        </a>
+        <a class="episode" href="c/card_pet_dragon.html">
+          <img src="img/cards/card_pet_dragon.jpg" alt="Dragonnet" loading="lazy" style="aspect-ratio: 1">
+          <div><span>COMPAGNON</span><h3>Dragonnet</h3><p>Enflamme les ennemis</p></div>
+        </a>
+        <a class="episode" href="c/card_pet_calf.html">
+          <img src="img/cards/card_pet_calf.jpg" alt="Veau" loading="lazy" style="aspect-ratio: 1">
+          <div><span>COMPAGNON</span><h3>Veau</h3><p>Le petit du Créateur : ulti plus rapide</p></div>
+        </a>
+        <a class="episode" href="c/card_pet_shard.html">
+          <img src="img/cards/card_pet_shard.jpg" alt="Éclat de cristal" loading="lazy" style="aspect-ratio: 1">
+          <div><span>COMPAGNON</span><h3>Éclat de cristal</h3><p>Son chant ralentit</p></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="jeu">
+    <div class="wrap">
+      <h2>Le jeu</h2>
+      <p class="lead">Vue à la troisième personne, contrôles tactiles ou clavier et souris, parties courtes. Tout se débloque en jouant.</p>
+      <div class="features">
+        <article class="feature">
+          <img src="img/arenas.jpg" alt="Le Soldat et la Kunoichi face au squelette géant dans le désert" loading="lazy">
+          <div><h3><b>6</b> arènes</h3><p>Station, désert, jungle, volcan, Matrice et ville : ponts, étages, rivières de lave et pluie de code. Les ennemis montent jusqu'à toi.</p></div>
+        </article>
+        <article class="feature">
+          <img src="img/boss.jpg" alt="Le Titan dans la ville" loading="lazy">
+          <div><h3><b>6</b> boss</h3><p>Un boss toutes les cinq vagues, dont le Virus dans la Matrice, jusqu'au Titan. Bats-le pour gagner le skin Champion.</p></div>
+          <div><h3>Noël</h3><p>Du 1er décembre au 6 janvier : le Village enneigé, le Père Glaçon, un cadeau par jour, la boutique et les cartes de Noël.</p></div>
+        </article>
+        <article class="feature">
+          <img src="img/ultis.jpg" alt="La Kunoichi et ses clones" loading="lazy">
+          <div><h3><b>19</b> héros</h3><p>Chacun son ulti : frappe aérienne, clones, arrêt du temps, tourbillon… et six danses en pleine partie.</p></div>
+        </article>
+        <article class="feature">
+          <img src="img/armes.jpg" alt="Les fusils d'assaut de l'arsenal" loading="lazy">
+          <div><h3><b>46</b> armes</h3><p>Pistolets, revolvers, fusils, fusils à pompe, précision, 9 armes de corps à corps et 18 skins, chacun avec sa façon d'éliminer.</p></div>
+        </article>
+        <article class="feature">
+          <img src="img/heros.jpg" alt="Les héros qui dansent dans l'arsenal" loading="lazy">
+          <div><h3><b>70</b> paliers</h3><p>Le passe de combat est gratuit : chaque partie rapporte de l'XP, des défis du jour, un classement et des statistiques.</p></div>
+        </article>
+        <article class="feature shop">
+          <img src="img/boutique.jpg" alt="Les héros exclusifs de la boutique" loading="lazy">
+          <div><h3><b>Boutique</b></h3><p>Armes exotiques (laser, fusil à rail, lance-flammes…), skins animés et héros à l'ulti boostée, avec les crédits gagnés en jouant.</p></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="android" class="install">
+    <div class="wrap">
+      <h2>Installer sur Android</h2>
+      <p class="lead">L'APK utilise le rendu complet du moteur : plus beau et plus fluide que dans le navigateur.</p>
+      <ol class="steps">
+        <li>Ouvre le lien de téléchargement sur ton téléphone.</li>
+        <li>Autorise ton navigateur à installer des applications inconnues, si Android le demande.</li>
+        <li>Ouvre le fichier et installe. Les nouvelles versions s'installent par-dessus l'ancienne, sans perdre ta progression.</li>
+      </ol>
+      <div class="actions">
+        <a class="button alt" href="https://github.com/mariusortiz/overclock-builds/releases/download/latest-debug/overclock-debug.apk">Télécharger l'APK</a>
+        <a class="button ghost" href="../">Ou jouer dans le navigateur</a>
+      </div>
+      <p class="note">Version de test, mise à jour à chaque nouveauté.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Overclock · fait avec Godot Engine · <a href="boutique.html">boutique</a> · <a href="codex.html">codex</a> · <a href="nouveautes.html">nouveautés</a> · <a href="carte.html">échanger des cartes</a></p>
+    <p>Modèles, sons et musiques sous licence CC0 : Quaternius, Kenney et les auteurs d'OpenGameArt.</p>
+  </div>
+</footer>
+
+</body>
+</html>
